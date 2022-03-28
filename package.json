@@ -1,0 +1,22 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Sanskruti Jaiswal <srjbeliever0129@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.23",
+    "chai": "^4.3.6",
+    "chai-ethers": "^0.0.1",
+    "dotenv": "^16.0.0",
+    "ethers": "^5.6.2",
+    "hardhat": "^2.9.2",
+    "hardhat-deploy": "^0.11.2",
+    "hardhat-deploy-ethers": "^0.3.0-beta.13",
+    "mocha": "^9.2.2",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  }
+}
