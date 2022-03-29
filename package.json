@@ -2,9 +2,16 @@
   "name": "test",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Sanskruti Jaiswal <srjbeliever0129@gmail.com>",
+  "repository": "https://github.com/Snerdify/testrepo",
+  "author": "Sanskruti Jaiswal ",
   "license": "MIT",
+
   "devDependencies": {
+    "@openzeppelin/contracts": "^3.4.0",
+    "@openzeppelin/contracts-0.8": "npm:@openzeppelin/contracts@4.0.0",
+    "@openzeppelin/contracts-upgradeable": "3.4.0",
+    "@typechain/ethers-v5": "^7.1.0",
+    "@typechain/hardhat": "^2.3.0",
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "^17.0.23",
@@ -17,6 +24,8 @@
     "hardhat-deploy-ethers": "^0.3.0-beta.13",
     "mocha": "^9.2.2",
     "ts-node": "^10.7.0",
+    "typechain": "^5.1.2",
     "typescript": "^4.6.3"
   }
+ 
 }

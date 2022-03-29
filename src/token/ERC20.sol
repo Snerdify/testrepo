@@ -1,11 +1,10 @@
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
+import "./IERC20.sol";
 
 
 
-
-contract Token {
+contract Token is IERC20 {
     string public name = "Token";
     string public symbol = "TOKEN";
 
@@ -13,42 +12,47 @@ contract Token {
 
     address public owner;
 
-    mapping(address => uint256) balances;
-
-    constructor(address _owner) {
-       
-       
-        balances[_owner] = totalSupply;
-        owner = _owner;
-
-    }
-    /*
-     * @dev transfer function
-     *
-     * @param address to- address to which the amount will be transfered
-     * @param amount - the amount of mooney to be transfered
-     */
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint)) public allowance;
 
    
-    function transfer(address to, uint256 amount) external {
-        require(balances[msg.sender] >= amount, "Not enough tokens");
-        balances[msg.sender] -= amount;
-        balances[to] += amount;
+   /*
+   * @dev transfer transfers the amount from owner to recipient
+   * @param address recipient is the address which will receive the amount
+   * @param uint amount is the amount being transfered
+   */
+    function transfer(address recipient, uint amount) external returns (bool) {
+        balanceOf[msg.sender] -= amount;
+        balanceOf[recipient] += amount;
+        
+        emit Transfer(msg.sender, recipient, amount);
+        return true;     }
+
+     /*
+   * @dev mint mints new tokens
+   * @param uint amount is the amount of tokens being minted
+   * 
+   */
+    function mint(uint amount) external { 
+        balanceOf[msg.sender] += amount; 
+        totalSupply += amount; 
+        emit Transfer(address(0), msg.sender, amount);  
+
     }
 
-    /**
-     * @dev Function to check the balance
-     *
-     * @param account- address of the account whose balance we want to check
-     * 
-     */
+       /*
+   * @dev burn burns the tokens
+   * @param uint amount is the amount of tokens being burned
+   * 
+   */
 
-
-     function balanceOf(address account) external view returns (uint256) {
-        return balances[account];
+        function burn(uint amount) external {
+        balanceOf[msg.sender] -= amount;
+        totalSupply -= amount; 
+        emit Transfer(msg.sender, address(0), amount);  
     }
 }
-
+    
    
     
     
