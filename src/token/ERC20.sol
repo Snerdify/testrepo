@@ -4,7 +4,7 @@ import "./IERC20.sol";
 
 
 
-contract Token is IERC20 {
+abstract contract Token is IERC20 {
     string public name = "Token";
     string public symbol = "TOKEN";
 

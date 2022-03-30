@@ -4,18 +4,18 @@ import {ethers, deployments, getNamedAccounts,getUnnamedAccounts} from 'hardhat'
 
 async function setup () {
     
-    await deployments.fixture(["Token"]);
+  await deployments.fixture(["Token"]);
+
+  const contracts = {Token: (await ethers.getContract('Token')),};
+  const {tokenOwner} = await getNamedAccounts();
+  const users = await setupUsers(await getUnnamedAccounts(), contracts);
   
-    const contracts = {Token: (await ethers.getContract('Token')),};
-    const {tokenOwner} = await getNamedAccounts();
-    const users = await setupUsers(await getUnnamedAccounts(), contracts);
-    
-    return {
-      ...contracts,
-      users,
-      tokenOwner: await setupUser(tokenOwner, contracts),
-    };
-  }
+  return {
+    ...contracts,
+    users,
+    tokenOwner: await setupUser(tokenOwner, contracts),
+  };
+}
   
  
   describe("Token contract", function() {
