@@ -28,7 +28,7 @@ abstract contract Token is IERC20 {
         emit Transfer(msg.sender, recipient, amount);
         return true;     }
 
-     /*
+    /*
    * @dev mint mints new tokens
    * @param uint amount is the amount of tokens being minted
    * 
@@ -40,7 +40,7 @@ abstract contract Token is IERC20 {
 
     }
 
-       /*
+    /*
    * @dev burn burns the tokens
    * @param uint amount is the amount of tokens being burned
    * 

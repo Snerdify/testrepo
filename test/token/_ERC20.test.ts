@@ -41,14 +41,14 @@ async function setup () {
       it("Should transfer tokens between accounts", async function () {
         const {Token, users, tokenOwner} = await setup();
         
-        await tokenOwner.Token.transfer(users[0].address, 50);
+        await tokenOwner.Token.transfer(users[0].address, 100);
         const users0Balance = await Token.balanceOf(users[0].address);
-        expect(users0Balance).to.equal(50);
+        expect(users0Balance).to.equal(100);
   
        
-        await users[0].Token.transfer(users[1].address, 50);
+        await users[0].Token.transfer(users[1].address, 100);
         const users1Balance = await Token.balanceOf(users[1].address);
-        expect(users1Balance).to.equal(50);
+        expect(users1Balance).to.equal(100);
       });
   
       it("Should fail if sender doesn’t have enough tokens", async function () {

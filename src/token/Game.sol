@@ -17,16 +17,26 @@ contract Game is ERC1155, Ownable {
     symbol = "GAME";
   }
     /*
-    *@dev
+    *@dev -only owner can call the mint function 
+    *
     */
   function mint(address _to, uint _id, uint _amount) external onlyOwner {
     _mint(_to, _id, _amount, "");
   }
 
+  /*
+  *@dev burn removes the set amount of tokens from the supply
+  */
   
   function burn(uint _id, uint _amount) external {
     _burn(msg.sender, _id, _amount);
   }
+
+  /*
+  * @dev- setURI gets the uri for the current token 
+  *@param - uint_id is the id of the current token
+  *
+  */
 
   
 
@@ -36,6 +46,10 @@ contract Game is ERC1155, Ownable {
     emit URI(_uri, _id);
   }
 
+
+  /*
+  * @dev uri retursn the URI associated with a token's id
+  */
   function uri(uint _id) public override view returns (string memory) {
     return tokenURI[_id];
   }

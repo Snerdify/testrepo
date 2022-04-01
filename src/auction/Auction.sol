@@ -16,8 +16,6 @@ contract Auction{
     event Start();
     event Bid(address indexed sender, uint amount);
     event End(address highestBidder,uint amount);
-
-
     event Withdraw(address indexed bidder,uint amount);
     IERC721 public immutable nft;
     uint public immutable nftId;

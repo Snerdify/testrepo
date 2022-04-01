@@ -17,9 +17,9 @@ describe('Function tests',async function(){
     it('Should be able to start  place a bid ',async function(){
         const{deployer,Nft} = await setupAuction();
         const nftAddress = await deployer.Auction.NFT();
-        expect(nftAddress).to.be.equal(NFT.address);
+        expect(nftAddress).to.be.equal(Nft.address);
 
-        return Contract.bid (_nft);
+       
 
 
         
