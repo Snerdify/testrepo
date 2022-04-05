@@ -3,9 +3,14 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Game is ERC1155, Ownable {
+
+import "../utils/AccessProtected.sol";
+
+
+contract Game is ERC1155, AccessProtected
+ 
+ {
     
   string public name;
   string public symbol;
@@ -20,39 +25,38 @@ contract Game is ERC1155, Ownable {
     *@dev -only owner can call the mint function 
     *
     */
-  function mint(address _to, uint _id, uint _amount) external onlyOwner {
-    _mint(_to, _id, _amount, "");
+  function mint(address recipient, uint256 tokenId , uint _amount, string memory URI) external onlyAdmin {
+    _mint(recipient, tokenId, _amount, "");
+     _setTokenURI(tokenId, URI);
   }
+
+
+
+  function setURI(uint256 tokenId, string memory tokenURI)
+        external
+        onlyAdmin
+    {
+        _setTokenURI(tokenId, tokenURI);
+    }
+
+
 
   /*
   *@dev burn removes the set amount of tokens from the supply
   */
   
-  function burn(uint _id, uint _amount) external {
-    _burn(msg.sender, _id, _amount);
+  function burn(address sender, uint256 tokenId,  uint _amount)public onlyRole(BURNER_ROLE) {
+    _burn(sender, tokenId  , _amount);
   }
 
-  /*
-  * @dev- setURI gets the uri for the current token 
-  *@param - uint_id is the id of the current token
-  *
-  */
 
+
+
+  
   
 
   
-  function setURI(uint _id, string memory _uri) external onlyOwner {
-    tokenURI[_id] = _uri;
-    emit URI(_uri, _id);
-  }
+  
 
 
-  /*
-  * @dev uri retursn the URI associated with a token's id
-  */
-  function uri(uint _id) public override view returns (string memory) {
-    return tokenURI[_id];
-  }
-
-}
-    
+   

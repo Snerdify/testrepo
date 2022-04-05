@@ -1,58 +1,65 @@
+
 import {expect} from "../chai-setup";
 import {setupUsers, setupUser} from '../utils';
-import {ethers, deployments, getNamedAccounts,getUnnamedAccounts} from 'hardhat';
+import{setupToken} from './fixtures';
 
-async function setup () {
-    
-  await deployments.fixture(["Token"]);
 
-  const contracts = {Token: (await ethers.getContract('Token')),};
-  const {tokenOwner} = await getNamedAccounts();
-  const users = await setupUsers(await getUnnamedAccounts(), contracts);
-  
-  return {
-    ...contracts,
-    users,
-    tokenOwner: await setupUser(tokenOwner, contracts),
-  };
-}
-  
+
  
-  describe("Token contract", function() {
-    describe("Deployment", function () {
+  describe("Token.sol", function() {
+    
+
+      it('should have correct name and symbol',async  function(){
+        const {deployer} = await setupToken();
+        const name = await deployer.TOKEN.name();
+        const symbol=await deployer.TOKEN.symbol();
+        expect(name).to.be.equal("Token");
+        expect(symbol).to.be.equal("TOKEN");
+
+
+      });
+
       it("Should set the right owner", async function () {
-        const {Token} = await setup();
-        const {tokenOwner} = await getNamedAccounts();
-        expect(await Token.owner()).to.equal(tokenOwner);
+        const { users,deployer }= await setupToken();
+        const tokenOwner = await deployer.setupToken.getNamedAccounts();
+       
+        expect(tokenOwner).to.be.true;
       });
 
 
-  
-      it("Should assign the total supply of tokens to the owner", async function () {
-        const {Token, tokenOwner} = await setup();
-        const ownerBalance = await Token.balanceOf(tokenOwner.address);
-        expect(await Token.totalSupply()).to.equal(ownerBalance);
+      it('should be able to assign total supply of tokens to the owner',async function(){
+          const {deployer} =await setupToken();
+          const {tokenOwner} = await setupToken.getNamedAccounts();
+          const ownerBalance = await setupToken.balanceOf(tokenOwner);
+          const supply = await setupToken.totalSupply();
+          expect (ownerBalance).to.be.equal(supply);
       });
-    });
+
+
+});
 
     
+
   
     describe("Transactions", function () {
+
+
       it("Should transfer tokens between accounts", async function () {
-        const {Token, users, tokenOwner} = await setup();
+        const {TOKEN  , users, tokenOwner} = await setupToken();
         
         await tokenOwner.Token.transfer(users[0].address, 100);
-        const users0Balance = await Token.balanceOf(users[0].address);
+        const users0Balance = await TOKEN.balanceOf(users[0].address);
         expect(users0Balance).to.equal(100);
   
        
         await users[0].Token.transfer(users[1].address, 100);
-        const users1Balance = await Token.balanceOf(users[1].address);
+        const users1Balance = await TOKEN.balanceOf(users[1].address);
         expect(users1Balance).to.equal(100);
       });
+
   
       it("Should fail if sender doesn’t have enough tokens", async function () {
-        const {Token, users, tokenOwner} = await setup();
+        const {Token, users, tokenOwner} = await setupToken();
         const initialOwnerBalance = await Token.balanceOf(tokenOwner.address);
   
         
@@ -64,9 +71,12 @@ async function setup () {
           initialOwnerBalance
         );
       });
+
+
+
   
       it("Should update balances after transfers", async function () {
-        const {Token, users, tokenOwner} = await setup();
+        const {Token, users, tokenOwner} = await setupToken();
         const initialOwnerBalance = await Token.balanceOf(tokenOwner.address);
   
        
@@ -85,5 +95,4 @@ async function setup () {
         const users1Balance = await Token.balanceOf(users[1].address);
         expect(users1Balance).to.equal(50);
       });
-    });
-  });
+});

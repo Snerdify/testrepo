@@ -15,10 +15,17 @@ contract Auction{
 
     event Start();
     event Bid(address indexed sender, uint amount);
-    event End(address highestBidder,uint amount);
-    event Withdraw(address indexed bidder,uint amount);
+    event Winner(address winner, uint bidValue);
+    
     IERC721 public immutable nft;
     uint public immutable nftId;
+
+
+    /* BIDDER */
+  struct Bidder {
+    bool hasBidded;
+    bytes bidValue;
+  }
 
 
     address payable public immutable seller;
@@ -27,14 +34,7 @@ contract Auction{
     bool public started;
     bool public ended;
 
-    /*
-    * address of the highest bidder
-    */
-    address public highestBidder;
-    uint public highestBid;
-    /*
-    * this will store total amount of bids u made if you r not the highest bidder
-    */
+   
     mapping(address=>uint) public bids; 
     
     constructor(
@@ -99,33 +99,13 @@ contract Auction{
 
         
         
-        /*
-         *@dev end function is the function where anyone can end the contract when we reach end time, then seller 
-         *receives the eth and highestbidder gets the nft
-        */
-        function end() external {
-            require(started,"Not Started");
-            require(!ended,"Ended");
-            require(block.timestamp>=endAt,"Not ended");
+        
 
 
-            ended=true;
-            /*
-            *dont want to send nft to address 0(no one participated in the auction
-            */
-            if (highestBidder!=address(0)){
-                nft.transferFrom(address(this),highestBidder,nftId);
-                seller.transfer(highestBid); // transfer the highest bidded money to the seller
-
-            }
-            else{
-                nft.transferFrom(address(this),seller,nftId);
-
-                emit End(highestBidder,highestBid);
-
-            }
-           
-
-        }
-    
-}
+/*
+   * Modifier that checks if the caller is the creator of the auction.
+   */
+  modifier isOwner() {
+    require(msg.sender == owner);
+    _;
+  }

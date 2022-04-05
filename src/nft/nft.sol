@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+pragma abicoder v2;
+
+
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../utils/AccessProtected.sol";
+
+
+
 contract nft is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -23,6 +29,8 @@ contract nft is ERC721 {
 
 
     }
+
+
     /*
     *@dev setURI sets the URI associated with the current tokenId
     * @param uint256 tokenId is the current token id
@@ -35,6 +43,8 @@ contract nft is ERC721 {
     {
         _setTokenURI(tokenId, tokenURI);
     }
+
+    
 
     /*
     *@dev burn burns the nfts
