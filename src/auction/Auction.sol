@@ -109,3 +109,5 @@ contract Auction{
     require(msg.sender == owner);
     _;
   }
+
+}

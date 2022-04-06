@@ -14,8 +14,10 @@ import { Token } from '../../src/types';
 export const setupToken = deployments.createFixture(async () => {
    
     await deployments.fixture('Token');
-    const {tokenOwner,accounts} = await getNamedAccounts();
     const TOKEN = await ethers.getContract('Token') as Token;
+    const accounts = await getNamedAccounts();
+    const tokenOwner =await getNamedAccounts();
+    
     const ownerBalance = await TOKEN.balanceOf(tokenOwner);
     const supply = await TOKEN.totalSupply();
 
@@ -41,5 +43,5 @@ export const setupToken = deployments.createFixture(async () => {
         return event?.args?.tokenId;
     };
     
-    return { TOKEN,getNamedAccounts,accounts, ownerBalance , supply , users, deployer, admin, mint };
+    return { TOKEN,accounts, ownerBalance  , users, deployer, admin, mint };
 });

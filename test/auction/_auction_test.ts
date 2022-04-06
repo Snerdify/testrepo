@@ -7,7 +7,7 @@ import { setupAuction } from './fixtures';
 describe('Auction', async function(){
     const Auction=await ethers.getContractFactory('Auction');
     const Contract=await Auction.deploy();
-    var Nft;
+    
     beforeEach('create an nft instance',async function(){
         Nft = await Nft.new({from:accounts[0]})
     })
@@ -19,10 +19,9 @@ describe('Function tests',async function(){
         const nftAddress = await deployer.Auction.NFT();
         expect(nftAddress).to.be.equal(Nft.address);
 
-       
-
-
-        
     });
-})
+
+
+
+});
   

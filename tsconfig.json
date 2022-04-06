@@ -13,6 +13,8 @@
     "include": [
       "hardhat.config.ts",
       "./deploy", "./scripts",
+      //new
+      "./typechain-types",
 
       "./test",
     ]

@@ -45,8 +45,8 @@ describe("Transfer Tests", async function () {
         const uri = "https://gateway.pinata.cloud/ipfs/0x00";
         const tokenId = await mint(holder.address, 1, uri);
         const newHolder = users[1];
-        const receipt = await (await holder.Game.transferFrom(holder.address, newHolder.address, tokenId)).wait();
-        const owner = await holder.Game.ownerOf(tokenId);
+        const receipt = await (await holder.GAME.transferFrom(holder.address, newHolder.address, tokenId)).wait();
+        const owner = await holder.GAME.ownerOf(tokenId);
         expect(owner).to.be.equal(newHolder.address);
     });
 

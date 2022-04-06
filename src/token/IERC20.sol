@@ -1,29 +1,78 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.7.6;
 
-//external functions are functions that are a part of the contract inteface but can be called from other contracts or via transactions
+/*
+*@dev Interface ERC20 is standard as defined by EIP
+*/
 
 
 interface IERC20{
-    //total amount of ERC20 tokens- Anyone can view this function and it returns a uint256 value
+   
+    /**
+    *@dev Returns the amount of tokens in existence.
+    */
     function totalSupply() external view returns (uint256); 
     
-    // returns the amount of ERC20 token that that account has-Anyone can view this func and it returns a uint256 value
+
+
+    /**
+    *@dev Returns the amount of tokens owned by `account`.
+    */
     function balanceOf(address account ) external view returns (uint256); 
     
-    //Holder of the ERC20 token can call the function transfer to transfer an amount of ERC20 tokens to the recipient
+
+
+    /**
+    * @dev Moves `amount` tokens from the caller's account to 'recipient'.
+    * Returns a boolean value indicating whether the operation succeeded.
+    * Emits a {Transfer} event.
+    */
     function transfer (address recipient , uint256 amount) external returns (bool); 
     
-    // if the token holder does not himself wants to transfer the tokens , then he/she can call the function approve,approving the spender to spend some of his tokens
-    function approve(address spender , uint256 amount ) external  returns (bool);
-    
-    //amount of tokens a spender can spend from a token holder or how much the token holder allows the spender to spend.
+
+    /**
+    * @dev Returns the remaining number of tokens that `spender` will be
+    * allowed to spend on behalf of `owner` through {transferFrom}. This is
+    * zero by default.
+    * This value changes when {approve} or {transferFrom} are called.
+    */
     function allowance (address owner , address spender) external view returns (uint256); 
     
-    //once the token holder approves the spender to spend the token on his behalf the spender can call the function transferFrom to transfer from the holder to another recipient 
+
+
+    /**
+    * @dev Sets `amount` as the allowance of `spender` over the caller's tokens,
+    * , i.e , sets the amount that a spender is allowed to spend on behalf of the owner
+    * Returns a boolean value indicating whether the operation succeeded
+    * Emits an {Approval} event.
+    */
+    function approve(address spender, uint256 amount) external returns (bool);
+
+
+
+    /**
+    * @dev Moves `amount` tokens from sender to recipient using the
+    * allowance mechanism. `amount` is then deducted from the spender's
+    * allowance.
+    * Returns a boolean value indicating whether the operation succeeded.
+    * Emits a {Transfer} event.
+    */
     function transferFrom(address sender,address recipient , uint256 amount) external  returns (bool);
     
+
+    /**
+    * @dev Emitted when `value` tokens are moved from one account (`from`) to
+    * another (`to`).
+    * Note that `value` may be zero.
+    */
     event Transfer(address indexed from ,  address indexed to, uint256 value);
+    
+    
+    
+    /**
+    * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+    * a call to {approve}. `value` is the new allowance.
+    */
     event Approval(address indexed owner, address indexed spender,uint256 value);
 
 
