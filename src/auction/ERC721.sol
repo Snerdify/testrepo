@@ -1,7 +1,7 @@
-pragma solidity ^0.4.2;
+pragma solidity ^0.7.6;
 
 import "./SafeMath.sol";
-import "./AddressUtils.sol";
+import "../utils/AddressUtils.sol";
 
 
 contract ERC721Receiver {

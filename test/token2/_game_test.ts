@@ -14,6 +14,15 @@ describe('Game.sol',async function(){
 
 });
 
+describe("Access Tests", async function () {
+
+    it("owner should be able to set admin", async function () {
+        const { users, deployer } = await setupGame();
+        const receipt = await deployer.GAME.setAdmin(users[0].address, true);
+        const isAdmin = await deployer.GAME.isAdmin(users[0].address);
+        expect(isAdmin).to.equal(true);
+    });
+
 describe("Minting Tests", async function () {
     it("should be able to mint", async function () {
         const { mint, users } = await setupGame();

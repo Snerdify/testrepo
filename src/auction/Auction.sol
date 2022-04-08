@@ -1,4 +1,4 @@
-ragma solidity ^0.4.2;
+pragma solidity ^0.7.6;
 
 import "./SafeMath.sol";
 import "../utils/AddressUtils.sol";
@@ -32,6 +32,8 @@ contract Auction{
 
     function createAuction(address _assetAddress,
                            uint256 _assetId,
+                            address _tokenAddress,
+
                        
                            uint256 _startPrice,
                            uint256 _startTime,
@@ -92,11 +94,19 @@ contract Auction{
         return false;
     }
 
+
+
     function getTotalAuctions() public view returns (uint256) { return auctions.length; }
+
+
 
     function isActive(uint256 index) public view returns (bool) { return getStatus(index) == Status.active; }
 
+
+
     function isFinished(uint256 index) public view returns (bool) { return getStatus(index) == Status.finished; }
+
+
 
     function getStatus(uint256 index) public view returns (Status) {
         Auction storage auction = auctions[index];
@@ -120,7 +130,23 @@ contract Auction{
         return auctions[auctionIndex].currentBidOwner;
     }
 
-  
+
+
+
+
+    function claimTokens(uint256 auctionIndex) public {
+        require(isFinished(auctionIndex));
+        Auction storage auction = auctions[auctionIndex];
+
+        require(auction.creator == msg.sender);
+        ERC20 token = ERC20(auction.tokenAddress);
+        require(token.transfer(auction.creator, auction.currentBidAmount));
+
+        emit Claim(auctionIndex, auction.creator);
+    }
+
+
+
     function claimAsset(uint256 auctionIndex) public {
         require(isFinished(auctionIndex));
         Auction storage auction = auctions[auctionIndex];

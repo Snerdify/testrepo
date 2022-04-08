@@ -54,11 +54,11 @@ contract nft is IERC721 , ERC721 {
     function approve(address to,uint256 tokenId) public onlyOwner(tokenId){
         address owner =ownerOf(tokenId);
         require(to!=owner,"Address should not be same as owner");
-        if(approvedFor((tokenId)!=0 || to !=0 ){
-            tokenApprovals[tokenId] = to;
-            Approval(owner , to , tokenId);
+        if(approvedFor((tokenId)!=0 || to !=0 )(
+            tokenApprovals[tokenId] = to,
+            Approval(owner , to , tokenId),
             
-        }
+        )
        
     }
 

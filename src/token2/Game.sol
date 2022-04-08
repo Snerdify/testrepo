@@ -5,7 +5,7 @@ pragma solidity ^0.7.6;
 
 
 import "./IERC1155.sol";
-import "../utils/Address.sol";
+import "../utils/AddressUtils.sol";
 contract Game is IERC1155{
     using Address for address;
 
