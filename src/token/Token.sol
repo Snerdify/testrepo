@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.7.6;
+
 import "./IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 
-contract Token is IERC20 ,ERC20{
+contract Token is IERC20 , ERC20{
+
     mapping(address => uint256) public _balances;
     mapping(address => mapping(address => uint)) public _allowances;
     uint256 public totalSupply ;
@@ -23,14 +25,14 @@ contract Token is IERC20 ,ERC20{
     /**
     * @dev Returns the name of the token.
     */
-    function name() public view virtual override returns (string memory) {
+    function name() public view  returns (string memory) {
         return _name;
     }
 
     /**
     * @dev Returns the symbol of the token, 
     */
-    function symbol() public view virtual override returns (string memory) {
+    function symbol() public view  returns (string memory) {
         return _symbol;
     }
 
@@ -41,10 +43,7 @@ contract Token is IERC20 ,ERC20{
         return _totalSupply;
     }
 
-    function balanceOf(address account) public view  returns (uint256) {
-        return _balances[account];
-    }
-
+    
 
     /**
     * @dev Returns the balance of the token holder

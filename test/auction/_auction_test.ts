@@ -1,27 +1,22 @@
-import { Contract } from 'ethers';
-import { ethers } from 'hardhat';
+import{GameItem} from './GameItem.sol';
 import { expect } from '../chai-setup';
-import { setupNFT } from '../nft/fixtures';
 import { setupAuction } from './fixtures';
 
-describe('Auction', async function(){
-    const Auction=await ethers.getContractFactory('Auction');
-    const Contract=await Auction.deploy();
-    
-    beforeEach('create an nft instance',async function(){
-        Nft = await Nft.new({from:accounts[0]})
-    })
-})
 
-describe('Function tests',async function(){
-    it('Should be able to start  place a bid ',async function(){
-        const{deployer,Nft} = await setupAuction();
-        const nftAddress = await deployer.Auction.NFT();
-        expect(nftAddress).to.be.equal(Nft.address);
+describe("AuctionEngine",async  function() {
+    it ('sould create an auction', async function(){
+        const {deployer,accounts} =await setupAuction()
+        const Game = await GameItem.new({from:accounts[1]});
+        const owner =await GameItem.ownerOf(0);
+        expect(owner).to.be.equal(accounts[1]);
+        await Game.createauction(Game.address,0, 0,0,10,{from:accounts[1]});
 
-    });
+
+}
 
 
 
-});
-  
+   
+
+
+

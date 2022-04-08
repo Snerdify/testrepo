@@ -7,12 +7,13 @@ import {
 
 import { setupUsers, setupUser } from '../utils';
 import { Auction } from '../../src/types';
-
+import {GameItem} from './GameItem.sol'
 export const setupAuction = deployments.createFixture(async () => {
     
     await deployments.fixture('Auction');
+    
 
-    const NFT = await ethers.getContract('Auction') as Auction;
+    const Auction = await ethers.getContract('Auction') as Auction;
     
     const accounts = await getNamedAccounts();
 
@@ -29,5 +30,7 @@ export const setupAuction = deployments.createFixture(async () => {
   
 
     
-    return { Auction, users, deployer, admin};
+    return { Auction, users, deployer, admin,accounts};
 });
+
+

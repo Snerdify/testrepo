@@ -31,7 +31,7 @@ export const setupGame = deployments.createFixture(async () => {
 
     // Mint Setup
 
-    const mint = async (recipient: string, tokenId: number, uri: string) => {
+    const mint = async (recipient: string, tokenId: number) => {
         const receipt = await (await deployer.GAME.mint(recipient, tokenId, uri)).wait();
         const event = receipt?.events?.filter(
             (event: Event) => event.event === 'Transfer'

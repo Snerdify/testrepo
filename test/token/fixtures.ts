@@ -43,5 +43,5 @@ export const setupToken = deployments.createFixture(async () => {
         return event?.args?.tokenId;
     };
     
-    return { TOKEN,accounts, ownerBalance  , users, deployer, admin, mint };
+    return { TOKEN,accounts, ownerBalance  , users, deployer, admin, mint ,supply,tokenOwner};
 });

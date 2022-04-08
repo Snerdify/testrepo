@@ -27,8 +27,8 @@ export const setupNFT = deployments.createFixture(async () => {
 
 
 
-    const mint = async (recipient: string, tokenId: number, uri: string) => {
-        const receipt = await (await deployer.NFT.mint(recipient, tokenId, uri)).wait();
+    const mint = async (recipient: string, tokenId: number) => {
+        const receipt = await (await deployer.NFT.mint(recipient, tokenId)).wait();
         const event = receipt?.events?.filter(
             (event: Event) => event.event === 'Transfer'
         )[0];

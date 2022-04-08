@@ -7,57 +7,102 @@ pragma abicoder v2;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../utils/AccessProtected.sol";
+import "./IERC721.sol";
 
 
 
-contract nft is ERC721 {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+contract nft is IERC721 , ERC721 {
+    // mapping from tokenId to owner address
+    mapping(uint256=>address) private tokenOwner;
 
-    constructor() ERC721("Item", "ITEM") {}
+    //mapping from owner address to token count
+    mapping(address => uint256 []) private ownedTokens;
+
+   //mapping from tokenId to approved Addresses
+    mapping(uint256 => address ) private tokenApprovals ;
+
 
 
     /*
-    *@dev mint mints new items
-    * @param addrress recipient 
-    * @param uint256 tokenId is the current id of the token 
-    * @ param string memory uri is the uri of the current token id
+    *@dev balanceOf returns the number of tokens owned by the address
     */
-    function mint(address recipient,uint256 tokenId,string memory URI) external onlyAdmin {
-        _mint(recipient, tokenId);
-        _setTokenURI(tokenId, URI);
+   function balanceOf(address owner) public view returns (uint256){
+       require(owner !=address(0) ,"owner=zero address") ;
+       return ownedTokens[owner].length;
+   }
+
+   /*
+   */
+    function ownerOf(uint256 tokenId) public view returns(address){
+        address owner = tokenOwner[tokenId];
+        require(owner!=address(0),"Address does not exist");
+        return owner;
 
 
     }
 
+    modifier onlyOwner (uint256 tokenId){
+        require(ownerOf(tokenId)= msg.sender);
+        _;
+    }
+
+    function approvedFor(uint256 tokenId) public view returns (address){
+        require(tokenOwner[tokenId]!=address(0),"Token does not exist");
+        return tokenApprovals[tokenId];
+    }
+
+    function approve(address to,uint256 tokenId) public onlyOwner(tokenId){
+        address owner =ownerOf(tokenId);
+        require(to!=owner,"Address should not be same as owner");
+        if(approvedFor((tokenId)!=0 || to !=0 ){
+            tokenApprovals[tokenId] = to;
+            Approval(owner , to , tokenId);
+            
+        }
+       
+    }
 
     /*
-    *@dev setURI sets the URI associated with the current tokenId
-    * @param uint256 tokenId is the current token id
-    * @param string memory tokenUri is the uri of the current token
     */
-
-     function setURI(uint256 tokenId, string memory tokenURI)
-        external
-        onlyAdmin
-    {
-        _setTokenURI(tokenId, tokenURI);
+    function transfer(address to ,uint256 tokenId) public onlyOwner (tokenId){
+        require(to!= address(0) ,"Transfer to zero address not possible");
+        //ownedTokens[from] -= 1;
+        ownedTokens[to]+= 1;
+        emit Transfer(from,to,tokenId);
     }
 
     
 
-    /*
-    *@dev burn burns the nfts
-    * @param uint256 is the token id of the nft
-    * 
-    */
+    function mint(address to, uint256 tokenId) external{
+        require(to != address(0) ,"Mint ot zero address ");
+        require(tokenOwners[tokenId]==address(0),"Token Already minted");
+
+        ownedTokens[to] += 1;
+        ownedTokens[tokenId]=to;
+
+        emit Transfer(address(0),tokenId);
 
 
-    function burn(address sender, uint256 tokenId) public onlyRole(BURNER_ROLE) {
-        _burn(sender,tokenId );
 
     }
 
+    function burn(uint256 tokenId) external{
+        address owner=ownerOf(tokenId);
+        ownedTokens[owner] -= 1;
+        delete tokenOwners[tokenId];
+        emit Transfer(owner,address(0),tokenId);
+    }
 
+    
+
+
+
+
+
+   
+
+
+   
+   
 }
 

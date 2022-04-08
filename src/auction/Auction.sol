@@ -1,113 +1,136 @@
+ragma solidity ^0.4.2;
 
+import "./SafeMath.sol";
+import "../utils/AddressUtils.sol";
 
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
-
-interface IERC721{
-    function transferFrom(
-        address from,
-        address to,
-        uint nftId
-    )external ;
-}
+import "./ERC721.sol";
+import "./ERC20.sol";
 
 contract Auction{
+    using SafeMath for uint256;
+    using AddressUtils for address;
 
-    event Start();
-    event Bid(address indexed sender, uint amount);
-    event Winner(address winner, uint bidValue);
-    
-    IERC721 public immutable nft;
-    uint public immutable nftId;
+    event AuctionCreated(uint256 _index, address _creator, address _asset, address _token);
+    event AuctionBid(uint256 _index, address _bidder, uint256 amount);
+    event Claim(uint256 auctionIndex, address claimer);
 
+    enum Status { pending, active, finished }
+    struct Auction {
+        address assetAddress;
+        uint256 assetId;
+        address tokenAddress;
 
-    /* BIDDER */
-  struct Bidder {
-    bool hasBidded;
-    bytes bidValue;
-  }
+        address creator;
 
+        uint256 startTime;
+        uint256 duration;
+        uint256 currentBidAmount;
+        address currentBidOwner;
+        uint256 bidCount;
+    }
+    Auction[] private auctions;
 
-    address payable public immutable seller;
-    
-    uint32 public endAt;
-    bool public started;
-    bool public ended;
+    function createAuction(address _assetAddress,
+                           uint256 _assetId,
+                       
+                           uint256 _startPrice,
+                           uint256 _startTime,
+                           uint256 _duration) public returns (uint256) {
 
-   
-    mapping(address=>uint) public bids; 
-    
-    constructor(
-        address _nft,
-        uint _nftId,
-        uint _startingBid){
-            nft=IERC721(_nft);
-            nftId=_nftId;
-            seller=payable(msg.sender);  
-            highestBid=_startingBid;
+        require(_assetAddress.isContract());
+        ERC721 asset = ERC721(_assetAddress);
+        require(asset.ownerOf(_assetId) == msg.sender);
+        require(asset.getApproved(_assetId) == address(this));
 
+       
 
-        }
-        /*
-        *@dev to start the auction this function requires the owner to be the seller
-        *@dev once the auction is started it will continue for 7 days
-        *
-        */
-        function start() external {
-            require(msg.sender==seller,"not the seller!!");
-            require(!started ," Already Started ");
+        if (_startTime == 0) { _startTime = now; }
 
-            started=true;
-            endAt=uint32(block.timestamp+60 );
-            nft.transferFrom(seller,address(this),nftId);
-            emit Start();
+        Auction memory auction = Auction({
+            creator: msg.sender,
+            assetAddress: _assetAddress,
+            assetId: _assetId,
+          
+            startTime: _startTime,
+            duration: _duration,
+            currentBidAmount: _startPrice,
+            currentBidOwner: address(0),
+            bidCount: 0
+        });
+        uint256 index = auctions.push(auction) - 1;
 
+        emit AuctionCreated(index, auction.creator, auction.assetAddress);
 
-        }
-         /*
-         * if the current time is less than the end time of the auction, then a bid could be placed
-         * bid is only valid if its more than the current highest bid
-         * if the highest bidder exists then add the highest bid to the bids array
-        */
+        return index;
+    }
 
+    function bid(uint256 auctionIndex, uint256 amount) public returns (bool) {
+        Auction storage auction = auctions[auctionIndex];
+        require(auction.creator != address(0));
+        require(isActive(auctionIndex));
 
-        function bid() external payable{
-            require(started,"Not Started");
-            require(block.timestamp<endAt,"Ended");
-            
-            require(msg.value>highestBid,"Value<highestbid");
-
-           
-            if (highestBidder!=address(0)) {
-                bids[highestBidder] +=highestBid;
+        if (amount > auction.currentBidAmount) {
+            // we got a better bid. Return tokens to the previous best bidder
+            // and register the sender as `currentBidOwner`
+            ERC20 token = ERC20(auction.tokenAddress);
+            require(token.transferFrom(msg.sender, address(this), amount));
+            if (auction.currentBidAmount != 0) {
+                // return funds to the previuos bidder
+                token.transfer(
+                    auction.currentBidOwner,
+                    auction.currentBidAmount
+                );
             }
-            highestBid=msg.value;
-            highestBidder=msg.sender;
+            // register new bidder
+            auction.currentBidAmount = amount;
+            auction.currentBidOwner = msg.sender;
+            auction.bidCount = auction.bidCount.add(1);
 
-            emit Bid(msg.sender,msg.value);}
-        
-        
-         /*
-         *
-        */
-        function withdraw() external {
-            uint bal=bids[msg.sender];
-            bids[msg.sender]=0;
-            payable(msg.sender).transfer(bal);
-            emit Withdraw(msg.sender,bal);
+            emit AuctionBid(auctionIndex, msg.sender, amount);
+            return true;
         }
+        return false;
+    }
 
-        
-        
-        
+    function getTotalAuctions() public view returns (uint256) { return auctions.length; }
 
+    function isActive(uint256 index) public view returns (bool) { return getStatus(index) == Status.active; }
 
-/*
-   * Modifier that checks if the caller is the creator of the auction.
-   */
-  modifier isOwner() {
-    require(msg.sender == owner);
-    _;
-  }
+    function isFinished(uint256 index) public view returns (bool) { return getStatus(index) == Status.finished; }
 
+    function getStatus(uint256 index) public view returns (Status) {
+        Auction storage auction = auctions[index];
+        if (now < auction.startTime) {
+            return Status.pending;
+        } else if (now < auction.startTime.add(auction.duration)) {
+            return Status.active;
+        } else {
+            return Status.finished;
+        }
+    }
+
+    function getCurrentBidOwner(uint256 auctionIndex) public view returns (address) { return auctions[auctionIndex].currentBidOwner; }
+
+    function getCurrentBidAmount(uint256 auctionIndex) public view returns (uint256) { return auctions[auctionIndex].currentBidAmount; }
+
+    function getBidCount(uint256 auctionIndex) public view returns (uint256) { return auctions[auctionIndex].bidCount; }
+
+    function getWinner(uint256 auctionIndex) public view returns (address) {
+        require(isFinished(auctionIndex));
+        return auctions[auctionIndex].currentBidOwner;
+    }
+
+  
+    function claimAsset(uint256 auctionIndex) public {
+        require(isFinished(auctionIndex));
+        Auction storage auction = auctions[auctionIndex];
+
+        address winner = getWinner(auctionIndex);
+        require(winner == msg.sender);
+
+        ERC721 asset = ERC721(auction.assetAddress);
+        asset.transferFrom(auction.creator, winner, auction.assetId);
+
+        emit Claim(auctionIndex, winner);
+    }
 }

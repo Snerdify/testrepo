@@ -17,33 +17,21 @@ describe('Game.sol',async function(){
 describe("Minting Tests", async function () {
     it("should be able to mint", async function () {
         const { mint, users } = await setupGame();
-        const uri = "https://gateway.pinata.cloud/ipfs/0x00";
-        const x = 20;
-        const y = 15;
-        const tokenId = await mint(users[0].address, 0, uri);
+        
+        const tokenId = await mint(users[0].address, 0);
         const owner = await users[0].GAME.ownerOf(tokenId);
         expect(owner).to.be.equal(users[0].address);
     });
 
-    it("should be able to get URI", async function () {
-        const { mint, users } = await setupGame();
-        const uri = "https://gateway.pinata.cloud/ipfs/0x00";
-        const x = 0;
-        const y = 0;
-        const tokenId = await mint(users[0].address, 0, uri);
-        const tokenURI = await users[0].GAME.tokenURI(tokenId);
-        expect(tokenURI).to.be.equal(uri);
-    });
+    
 });
 
 describe("Transfer Tests", async function () {
     it("Account holder should be able to transfer", async function () {
         const { mint, users } = await setupGame();
         const holder = users[0];
-        const x = 0;
-        const y = 0;
-        const uri = "https://gateway.pinata.cloud/ipfs/0x00";
-        const tokenId = await mint(holder.address, 1, uri);
+       
+        const tokenId = await mint(holder.address, 1);
         const newHolder = users[1];
         const receipt = await (await holder.GAME.transferFrom(holder.address, newHolder.address, tokenId)).wait();
         const owner = await holder.GAME.ownerOf(tokenId);

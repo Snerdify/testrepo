@@ -72,17 +72,42 @@ describe("Minting Tests", async function () {
 
 describe("Transfer Tests", async function () {
         it("holder should be able to transfer", async function () {
-            const { mint, users } = await setupNFT();
+            const { mint, users} = await setupNFT();
+           
+
             const holder = users[0];
-            const x = 0;
-            const y = 0;
-            const uri = "https://gateway.pinata.cloud/ipfs/0x00";
-            const tokenId = await mint(holder.address, 1, uri);
+            
+            const tokenId = await mint(holder.address, 1);
             const newHolder = users[1];
             const receipt = await (await holder.NFT.transferFrom(holder.address, newHolder.address, tokenId)).wait();
             const owner = await holder.NFT.ownerOf(tokenId);
             expect(owner).to.be.equal(newHolder.address);
         });
+
+        it("holder should be able to approve", async function () {
+            const { mint, users } = await setupNFT();
+            const holder = users[0];
+           
+           
+            const tokenId = await mint(holder.address, 1);
+            const approved = users[1];
+            const receipt = await (await holder.NFT.approve(approved.address, tokenId)).wait();
+            const _approved = await holder.NFT.getApproved(tokenId);
+            expect(_approved).to.be.equal(approved.address);
+        });
+        it("approved should be able to transfer", async function () {
+            const { mint, users } = await setupNFT();
+            const holder = users[0];
+           
+            
+            const tokenId = await mint(holder.address, 1);
+            const approved = users[1];
+            await (await holder.NFT.approve(approved.address, tokenId)).wait();
+            const receipt = await (await approved.NFT.transferFrom(holder.address, approved.address, tokenId)).wait();
+            const owner = await holder.NFT.ownerOf(tokenId);
+            expect(owner).to.be.equal(approved.address);
+        });
+        
 });
 
    
